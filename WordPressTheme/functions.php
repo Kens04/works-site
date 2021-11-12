@@ -149,3 +149,197 @@ function my_excerpt_more( $more ) {
 
 }
 add_filter( 'excerpt_more', 'my_excerpt_more' );
+	
+	function my_theme_widgets_init() {
+		register_sidebar( array(
+			'name' => 'Main Sidebar',
+			'id' => 'main-sidebar',
+			'before_widget' => '<section id="%1$s" class="my_sidebar">',
+			'after_widget' => '</section>',
+			'before_title' => '<h3 class="sidebar_title">',
+			'after_title'  => '</h3>',
+		) );
+	}
+	add_action( 'widgets_init', 'my_theme_widgets_init' );
+	
+
+
+
+	function pagination( $pages, $term_id, $paged, $page_url, $range = 2) {
+
+		$pages = ( int ) $pages;//全てのページ数。float型で渡ってくるので明示的に int型 へ
+		$paged = $paged ?: 1;//現在のページ
+		$term_id = ( $term_id ) ? $term_id : 0;//タームID
+		$s = $_GET['s'];//検索ワードを取得
+		$search = ($s) ? '&s='.$s : '';//検索パラメータを制作
+		$showitems = ($range * 2)+1;
+		$prev = ($paged - 1); // 前のページ番号
+
+		if ($pages === 1 ) {
+				// 1ページ以上の時 => 出力しない
+				return;
+		};
+		if ( 1 !== $pages ) {
+				//２ページ以上の時
+				echo '<div class="inner">';
+				echo '<ul class="pagenation__list">';
+				if ( $paged > $pages - $range )
+				if ($paged > 1)
+			{
+						echo '<li class="pagenation__prev"><a href="'.$page_url.'?term_id='.$term_id.'&pagenum='.$prev.'"><span>PREV</span></a></li>';
+					}
+				if ( $paged > $range + 1 ) {
+					// 一番初めのページへのリンク
+					echo '<li class="pagenation__number .page__first"><a href="'.$page_url.'?term_id='.$term_id.'&pagenum=1'.$search.'"><span>1</span></a></li>';
+					echo '<div class="dots"><span>...</span></div>';
+				};
+				for ( $i = 1; $i <= $pages; $i++ ) {
+					//ページ番号の表示
+					if ( $i <= $paged + $range && $i >= $paged - $range ) {
+						if ( $paged == $i ) {
+							//現在表示しているページ
+							echo '<li class="pagenation__number -current"><span>'.$i.'</span></li>';
+						} else {
+							//前後のページ
+							echo '<li class="pagenation__number"><a href="'.$page_url.'?term_id='.$term_id.'&pagenum='.$i.$search.'"><span>'.$i.'</span></a></li>';
+						};
+					};
+				};
+				if ( $paged < $pages - $range ) {
+					// 一番最後のページへのリンク
+					echo '<div class="dots"><span>...</span></div>';
+					echo '<li class="pagenation__number"><a href="'.$page_url.'?term_id='.$term_id.'&pagenum='. $pages.$search.'"><span>'. $pages .'</span></a></li>';
+				}
+
+		};
+		for ( $i = 1; $i <= $paged; $i++ ) {
+		} if ( $paged < $pages ) {
+			echo '<li class="pagenation__next"><a href="'.$page_url.'?term_id='.$term_id.'&pagenum='.$i.$search.'"><span>NEXT</span></a></li>';
+		}
+		echo '</ul>';
+		echo '</div>';
+	};
+	
+
+
+
+
+	/*パンくず
+	--------------------------------------------------------- */
+	function breadcrumb($postID) {
+		$title = get_the_title($postID);//記事タイトル
+		
+		$labels = esc_html(get_post_type_object(get_post_type())->label);
+		echo '<ol class="breadcrumb-list">';
+		if ( is_singular('blog') ) {
+			//詳細ページの場合
+			echo '<li class="breadcrumb-item"><a href="http://xs020843.xsrv.jp/codeupsdemo/">トップ</a></li>';
+			echo'<li class="breadcrumb-item">></li>';
+			echo '<li class="breadcrumb-item"><a href="/blogs/">ブログ記事一覧</a></li>';
+			echo'<li class="breadcrumb-item">></li>';
+			echo '<li class="breadcrumb-item" aria-current="page">'.$labels.'</li>';
+	}
+	else if ( is_singular('works') ) {
+		//詳細ページの場合
+		echo '<li class="breadcrumb-item"><a href="http://xs020843.xsrv.jp/codeupsdemo/">トップ</a></li>';
+		echo'<li class="breadcrumb-item">></li>';
+		echo '<li class="breadcrumb-item"><a href="/work/">制作実績</a></li>';
+		echo'<li class="breadcrumb-item">></li>';
+		echo '<li class="breadcrumb-item" aria-current="page">'.$labels.'</li>';
+}
+		else if( is_page() ) {
+			//固定ページの場合
+			echo '<li class="breadcrumb-item"><a href="http://xs020843.xsrv.jp/codeupsdemo/"><i class="fas fa-home"></i>トップ</a></li>';
+			echo'<li class="breadcrumb-item">></li>';
+			echo '<li class="breadcrumb-item" aria-current="page">'.$title.'</li>';
+		}
+		else if( is_category() ) {
+			//固定ページの場合
+			echo '<li class="breadcrumb-item"><a href="http://xs020843.xsrv.jp/codeupsdemo/"><i class="fas fa-home"></i>トップ</a></li>';
+			echo'<li class="breadcrumb-item">></li>';
+			echo '<li class="breadcrumb-item"><a href="/work/"><i class="fas fa-home"></i>制作実績</a></li>';
+		}
+		echo "</ol>";
+	}
+
+
+
+	// カスタム投稿タイプの追加
+	function cpt_register_blog() { //add_actionの２つのパラメーターを定義
+		$labels = [
+			"singular_name" => "blog",
+			"edit_item" => "blog",
+		];
+		$args = [
+			"label" => "ブログ記事詳細", //管理画面に出てくる名前
+			"labels" => $labels,
+			"description" => "",
+			"public" => true,
+			"show_in_rest" => true,
+			"rest_base" => "",
+			"rest_controller_class" => "WP_REST_Posts_Controller",
+			"has_archive" => true,
+			"delete_with_user" => false,
+			"exclude_from_search" => false,
+			"map_meta_cap" => true,
+			"hierarchical" => true,
+			"rewrite" => [ "slug" => "blog", "with_front" => true ], //スラッグをblogに設定
+			"query_var" => true,
+			"menu_position" => 5,
+			"supports" => [ "title", "editor", "thumbnail","excerpt", "author"],
+		];
+		register_post_type( "blog", $args );
+		register_taxonomy_for_object_type('category', 'blog');
+	}
+	add_action( 'init', 'cpt_register_blog' );
+
+
+		//制作実績（ここから）
+		function cpt_register_works() { //add_actionの２つのパラメーターを定義
+			$labels = [
+				"singular_name" => "works",
+				"edit_item" => "works",
+			];
+			$args = [
+				"label" => "制作実績詳細", //管理画面に出てくる名前
+				"labels" => $labels,
+				"description" => "",
+				"public" => true,
+				"show_in_rest" => true,
+				"rest_base" => "",
+				"rest_controller_class" => "WP_REST_Posts_Controller",
+				"has_archive" => true,
+				"delete_with_user" => false,
+				"exclude_from_search" => false,
+				"map_meta_cap" => true,
+				"hierarchical" => true,
+				"rewrite" => [ "slug" => "works", "with_front" => true ], //スラッグをworksに設定
+				"query_var" => true,
+				"menu_position" => 5,
+				"supports" => [ "title", "editor", "thumbnail","excerpt", "author"],
+			];
+			register_post_type( "works", $args );
+			register_taxonomy_for_object_type('category', 'works');
+		}
+		add_action( 'init', 'cpt_register_works' );
+
+
+		function my_error_message($error, $key, $rule){
+			if($key === 'company' && $rule === 'noempty'){
+					return '';
+			}
+			if($key === 'department' && $rule === 'noempty'){
+        return '';
+    }
+		if($key === 'name' && $rule === 'noempty'){
+			return '';
+	}
+	if($key === 'names' && $rule === 'noempty'){
+		return '';
+}
+if($key === 'contact' && $rule === 'noempty'){
+	return '';
+}
+			return $error;
+	}
+	add_filter('mwform_error_message_mw-wp-form-429', 'my_error_message', 10, 3);

@@ -344,6 +344,8 @@ body {
 	min-height: 100vh;
 	min-height: -webkit-fill-available;
 	overflow-wrap: break-word;
+	position: relative;
+	z-index: -9999;
 }
 
 /* Box sizing rules */
@@ -362,55 +364,160 @@ h1,
 h2,
 h3,
 h4,
+h5,
+h6,
+a,
 p,
 figure,
 blockquote,
+q,
+cite,
+code,
+pre,
+ol,
+ul,
+li,
 dl,
-dd {
-	margin: 0;
-}
-
-/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-
-ul[role="list"],
-ol[role="list"] {
-	list-style: none;
-}
-
-/* Set core root defaults */
-
-html:focus-within {
-	scroll-behavior: smooth;
-}
-
-/* Set core body defaults */
-
-body {
-	line-height: 1.5;
-	min-height: 100vh;
-	text-rendering: optimizeSpeed;
-}
-
-/* A elements that don't have a class get default styles */
-
-a:not([class]) {
-	-webkit-text-decoration-skip: ink;
-	text-decoration-skip-ink: auto;
-}
-
-/* Make images easier to work with */
-
+dt,
+dd,
+div,
+section,
+article,
+main,
+aside,
+nav,
+header,
+hgroup,
+footer,
 img,
-picture {
-	display: block;
+figure,
+figcaption,
+address,
+time,
+audio,
+video,
+canvas,
+iframe,
+details,
+summary,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	color: inherit;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+img {
+	border: none;
+	height: auto;
+	max-width: 100%;
+	vertical-align: top;
+}
+
+video,
+iframe,
+object {
+	border: none;
+	height: auto;
 	max-width: 100%;
 }
 
-/* Inherit fonts for inputs and buttons */
+ul,
+ol {
+	list-style: none;
+}
+
+table {
+	border: 1px solid;
+	border-collapse: collapse;
+	border-spacing: 0;
+	table-layout: fixed;
+	width: 100%;
+}
+
+th,
+td {
+	border: 1px solid;
+	padding: 4px 6px;
+	text-align: left;
+	vertical-align: top;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+
+blockquote::after,
+blockquote::before,
+q::after,
+q::before {
+	content: "";
+	content: none;
+}
+
+address {
+	font-style: normal;
+}
+
+b,
+strong {
+	font-weight: 700;
+}
+
+form {
+	margin: 0;
+	padding: 0;
+}
+
+label {
+	display: inline-block;
+}
+
+a,
+area,
+button,
+input,
+label,
+select,
+summary,
+textarea,
+[tabindex] {
+	touch-action: manipulation;
+}
 
 input,
 button,
-textarea,
+select,
+optgroup,
+textarea {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	margin: 0;
+}
+
+button,
+select {
+	text-transform: none;
+}
+
 select {
 	font: inherit;
 }
@@ -486,6 +593,7 @@ html {
 @media screen and (min-width: 768px) {
 
 .l-inner {
+	max-width: 1050px;
 	padding-left: 25px;
 	padding-right: 25px;
 }
@@ -498,6 +606,14 @@ html {
 .p-test {
 	color: green;
 	font-size: 3.125rem;
+}
+
+}
+
+@media (min-width: 1000px) {
+
+html {
+	font-size: 16px;
 }
 
 }
